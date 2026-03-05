@@ -27,3 +27,15 @@ prompt2 = PromptTemplate(
     template = "Read the text below and generate a concise 5-point summary. Each point should be brief and informative.\n\n{text}",
     input_variables=['text']
 )
+
+parser = StrOutputParser()
+
+chain = prompt1 | model1 | parser | prompt2 | model2 | parser
+config ={
+    'run_name': 'Sequential Chain',
+    'tag': ['llm app', 'report generation', 'summaraization'],
+    'metadata': {'model1': 'openai/gpt-oss-safeguard-20b', 'model2':'llama-3.1-8b-instant', 'parser':'StrOutputParser'}
+}
+result = chain.invoke({'topic': 'Machine learning effect on bangladesh'}, config=config)
+
+print(result)
