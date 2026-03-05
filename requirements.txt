@@ -1,0 +1,10 @@
+langchain
+langchain-community
+langgraph
+langsmith
+langchain-groq
+python-dotenv
+streamlit
+faiss-cpu
+pypdf
+duckduckgo_search
