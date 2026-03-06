@@ -36,3 +36,10 @@ def get_embedding_model():
     return embedding_model
 embedding_model = get_embedding_model()
 
+
+db = Chroma.from_documents(
+    documents=text_chunks,
+    embedding=embedding_model,
+    persist_directory="vectorstore/db_chroma" 
+)
+retriever = db.as_retriever(search_kwargs={"k": 3})
