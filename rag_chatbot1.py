@@ -8,11 +8,14 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
+from langsmith import traceable
 
 os.environ['LANGCHAIN_PROJECT'] = 'Rag Chatbot'
 load_dotenv()  
 
 DATA_PATH = "data/"
+
+@traceable(name="load_pdf")
 def load_pdf_files(data): 
     loader = DirectoryLoader(data, 
                             glob = '*.pdf', 
@@ -22,7 +25,7 @@ def load_pdf_files(data):
     return documents
 documents = load_pdf_files(data=DATA_PATH)
 
-
+@traceable(name="split_documents")
 def creat_chunks(extracted_data): 
     text_splitter = RecursiveCharacterTextSplitter(chunk_size = 500, 
                                                   chunk_overlap = 50)
@@ -30,7 +33,7 @@ def creat_chunks(extracted_data):
     return text_chunks 
 text_chunks = creat_chunks(extracted_data = documents)
 
-
+@traceable(name="Create_embedding")
 def get_embedding_model(): 
     embedding_model = HuggingFaceEmbeddings(model_name = "sentence-transformers/all-MiniLM-L6-v2")
     return embedding_model
@@ -60,3 +63,9 @@ parallel = RunnableParallel({
 })
 
 chain = parallel | prompt | llm | StrOutputParser()
+
+
+print("PDF RAG ready. Ask a question (or Ctrl+C to exit).")
+q = input("\nQ: ")
+ans = chain.invoke(q.strip())
+print("\nA:", ans)
