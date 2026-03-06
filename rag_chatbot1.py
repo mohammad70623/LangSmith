@@ -50,3 +50,13 @@ prompt = ChatPromptTemplate.from_messages([
     ("human", "Question: {question}\n\nContext:\n{context}")
 ])
 
+
+llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)  
+def format_docs(docs): return "\n\n".join(d.page_content for d in docs)
+
+parallel = RunnableParallel({
+    "context": retriever | RunnableLambda(format_docs),
+    "question": RunnablePassthrough()
+})
+
+chain = parallel | prompt | llm | StrOutputParser()
