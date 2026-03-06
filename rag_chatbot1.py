@@ -43,3 +43,10 @@ db = Chroma.from_documents(
     persist_directory="vectorstore/db_chroma" 
 )
 retriever = db.as_retriever(search_kwargs={"k": 3})
+
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "Answer ONLY from the provided context. If not found, say you don't know."),
+    ("human", "Question: {question}\n\nContext:\n{context}")
+])
+
